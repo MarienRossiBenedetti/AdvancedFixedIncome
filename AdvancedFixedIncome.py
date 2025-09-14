@@ -5,7 +5,10 @@ import pandas as pd
 
 def zc_bond(N, T, r, simple_rate=True):
     """
-    Returns the price of a Zero-Coupon Bond (discount factor)
+    Computes the price of a Zero-Coupon Bond (discount factor)
+    N : Face Value of the Bond
+    T : Maturity of the Bond
+    r : Discounted Rate
     """
     return N/(1+r*T)
 
@@ -29,7 +32,7 @@ def pv_simple(cf, r, tau):
 
 def bond_price(N, cpn_ann, T, freq_per_year, zc_rates: pd.Series):
     """
-    Compute the price of a Bond 
+    Computes the price of a Bond 
     N             : Face Value of the Bond
     cpn_ann       : Annual Coupon Rate of the Bond
     T             : Maturity
@@ -45,3 +48,20 @@ def bond_price(N, cpn_ann, T, freq_per_year, zc_rates: pd.Series):
     zc_prices = pd.Series([zc_bond(N=1, T=(i+1)*(1/freq_per_year), r=zc_rates.iloc[i], simple_rate=True) for i in range(nbre_payments)])
     # Discount Back and Sum the PVs of each CF
     return np.round((CFs * zc_prices).sum(), 4)
+
+def create_bond(N, T, cpn_ann, freq_per_year):
+    """
+    Creates a Bond that will be contained into a DataFrame
+    """
+    bond = pd.Series({"Nominal"            : N,
+                      "Tenor (Years)"      : T,
+                      "Annual Coupon"      : cpn_ann,
+                      "Payments Frequency" : freq_per_year
+                     })
+    return bond
+
+def macaulay_duation(bond: pd.Series):
+    """
+    Computes the Macaulay Duration of a Bond (Sensitivity to Interest Rates)
+    """
+    print("Hello World")
