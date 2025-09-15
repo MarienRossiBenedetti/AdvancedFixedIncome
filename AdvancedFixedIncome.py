@@ -2,6 +2,7 @@
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 def zc_bond(N, T, r, simple_rate=True):
     """
@@ -83,7 +84,8 @@ def bond_c_price(bond, yc):
 def macaulay_duration(bond, yc):
     """
     Computes the Macaulay Duration of a Bond (Sensitivity to Interest Rates)
-    yc : Compounded Yield
+    yc   : Compounded Yield
+    bond : Series DataFrame returned by the function create_bond
     """
     N = bond["Nominal"]
     T = bond["Tenor (Years)"]
@@ -105,5 +107,25 @@ def macaulay_duration(bond, yc):
     
     return np.round((num/den).sum(), 4)
 
+def modified_macaulay_duration(bond, yc):
+    """
+    Computes the Modified Macaulay Duaration of a Bond
+    bond : Series DataFrame as returned by the function create_bond
+    yc   : Compounded Yield
+    """
+    freq = bond["Payments Frequency"]
     
+    return np.round(macaulay_duration(bond, yc)/(1+(yc/freq)), 4)
+
+def bond_stats(bond, yc):
+    """
+    Returns a DataFrame with the stats of the Bond
+    bond : Series DataFrame as returned by the function create_bond
+    yc   : Compounded Yield
+    """
+    stats = pd.Series({"Price" : bond_c_price(bond, yc),
+                       "Macaulay Duration" : macaulay_duration(bond, yc),
+                       "Modified Macaulay" : modified_macaulay_duration(bond, yc)
+                       })
     
+    return stats
