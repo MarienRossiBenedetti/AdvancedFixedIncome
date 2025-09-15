@@ -28,9 +28,9 @@ def pv_simple(cf, r, tau):
     """
     Compute the PV of a future cash flow cf discounted back at the simple rate r
     """
-    return np.round(zc_bond(N=1, T=tau, r=r, simple_rate=True)*cf, 4)
+    return np.round(zc_bond(M=1, T=tau, r=r, simple_rate=True)*cf, 4)
 
-def bond_s_price(N, cpn_ann, T, freq_per_year, zc_rates: pd.Series):
+def bond_price(N, cpn_ann, T, freq_per_year, zc_rates: pd.Series):
     """
     Computes the price of a Bond 
     N             : Face Value of the Bond
@@ -40,7 +40,7 @@ def bond_s_price(N, cpn_ann, T, freq_per_year, zc_rates: pd.Series):
     zc_rates      : Series of ZC Rates    
     """
     # Extract each CFs 
-    nbre_payments = int(T*freq_per_year)
+    nbre_payments = T*freq_per_year
     CFs = pd.Series([cpn_ann*N*(1/freq_per_year) for i in range(nbre_payments)])
     # Add the Face Value to the last Coupon Payment
     CFs.iloc[-1] += N 
@@ -60,50 +60,8 @@ def create_bond(N, T, cpn_ann, freq_per_year):
                      })
     return bond
 
-def bond_c_price(bond, yc):
-    """
-    Computes the Price of a Bond with Compounded Returns as input
-    """
-    N = bond["Nominal"]
-    T = bond["Tenor (Years)"]
-    cpn_ann = bond["Annual Coupon"]
-    freq = bond["Payments Frequency"]
-    
-    # Extract each CFs 
-    nbre_payments = int(T*freq)
-    CFs = pd.Series([cpn_ann*N*(1/freq) for i in range(nbre_payments)])
-    # Add the Face Value to the last Coupon Payment
-    CFs.iloc[-1] += N 
-    
-    # Timeline of Payments
-    tl = pd.Series([(i+1)*(1/freq) for i in range(nbre_payments)])
-
-    return (CFs/((1+yc/freq)**(tl*freq))).sum()
-    
-def macaulay_duration(bond, yc):
+def macaulay_duation(bond: pd.Series):
     """
     Computes the Macaulay Duration of a Bond (Sensitivity to Interest Rates)
-    yc : Compounded Yield
     """
-    N = bond["Nominal"]
-    T = bond["Tenor (Years)"]
-    cpn_ann = bond["Annual Coupon"]
-    freq = bond["Payments Frequency"]
-    
-    # Extract each CFs 
-    nbre_payments = int(T*freq)
-    CFs = pd.Series([cpn_ann*N*(1/freq) for i in range(nbre_payments)])
-    # Add the Face Value to the last Coupon Payment
-    CFs.iloc[-1] += N 
-    
-    # Timeline of Payments
-    tl = pd.Series([(i+1)*(1/freq) for i in range(nbre_payments)])
-    
-    # Decomposition of Mac Duration
-    num = tl*np.exp(-yc*tl)*CFs
-    den = bond_c_price(bond, yc=yc)
-    
-    return np.round((num/den).sum(), 4)
-
-    
-    
+    print("Hello World")
